@@ -5,6 +5,15 @@ services:
         autowire: true
         autoconfigure: true
 
+    _instanceof:
+        App\Application\CommandHandler\CommandHandlerInterface:
+            tags:
+                - { name: messenger.message_handler, bus: command.bus }
+
+        App\Application\EventHandler\EventHandlerInterface:
+            tags:
+                - { name: messenger.message_handler, bus: event.bus }
+
     App\:
         resource: '../src/'
         exclude:
@@ -12,7 +21,7 @@ services:
             - '../src/Domain/Model'
             - '../src/Kernel.php'
 
-    App\Controller\:
+    App\Integration\Http\Controller\:
         resource: '../src/Integration/Http/Controller'
         tags: ['controller.service_arguments']
 

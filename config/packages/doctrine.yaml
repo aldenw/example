@@ -1,6 +1,11 @@
 doctrine:
     dbal:
-        url: '%env(resolve:DATABASE_URL)%'
+        dbname: db
+        host: 127.0.0.1
+        user: root
+        password: password
+        driver: pdo_mysql
+        port: 3306
         server_version: '5.7'
     orm:
         auto_generate_proxy_classes: true

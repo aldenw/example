@@ -6,9 +6,12 @@ namespace App\Domain\Model;
 
 use App\Domain\Event\DisputeCreatedEvent;
 use App\Domain\Event\DisputeLockedEvent;
+use App\Domain\Event\DisputeResponseAddedEvent;
 use App\Domain\Event\DisputeUnlockedEvent;
+use App\Domain\Model\Exception\DisputeIsLockedException;
 use DateInterval;
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,6 +25,7 @@ class Dispute extends AggregateRoot
      *
      * @ORM\Id
      * @ORM\Column(type="integer", nullable=false)
+     * @ORM\GeneratedValue
      */
     private int $id;
 
@@ -33,9 +37,18 @@ class Dispute extends AggregateRoot
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=false, unique=true)
+     * @ORM\Column(name="case_number", type="string", nullable=false, unique=true)
      */
     private string $caseNumber;
+
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\Domain\Model\DisputeResponse",
+     *     mappedBy="dispute",
+     *     cascade={"all"}
+     * )
+     */
+    private Collection $responses;
 
     public function __construct(string $caseNumber)
     {
@@ -56,7 +69,25 @@ class Dispute extends AggregateRoot
 
     public function isLocked(): bool
     {
-        return isset($this->lockedUntil) && $this->lockedUntil < new DateTime();
+        return isset($this->lockedUntil) && $this->lockedUntil > new DateTime();
+    }
+
+    /**
+     * @throws DisputeIsLockedException
+     */
+    public function addDisputeResponse(string $message)
+    {
+        // sleep(120);
+
+        if($this->isLocked()) {
+            throw new DisputeIsLockedException($this->getLockedUntil());
+        }
+
+        $this->lockCase();
+
+        $this->responses->add(new DisputeResponse($this, $message));
+
+        $this->raise(new DisputeResponseAddedEvent());
     }
 
     public function lockCase(DateInterval $expireTime = null): void
@@ -73,5 +104,10 @@ class Dispute extends AggregateRoot
         $this->lockedUntil = null;
 
         $this->raise(new DisputeUnlockedEvent());
+    }
+
+    private function getLockedUntil(): ?DateTime
+    {
+        return $this->lockedUntil;
     }
 }

@@ -2,52 +2,44 @@
 
 namespace App\Domain\Model;
 
-use App\Domain\Event\DisputeResponseCreatedEvent;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Integration\Database\Repository\DisputeResponseRepository")
  * @ORM\Table(name="dispute_responses")
  */
-class DisputeResponse extends AggregateRoot
+class DisputeResponse
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @var Dispute
      *
-     * @ORM\ManyToOne(targetEntity="App\Domain\Model\Dispute")
+     * @ORM\ManyToOne(targetEntity="App\Domain\Model\Dispute", inversedBy="responses")
      */
-    private $dispute;
+    private Dispute $dispute;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", nullable=false)
      */
-    private $message;
+    private string $message;
 
-    public function __construct(Dispute $dispute, string $response)
+    public function __construct(Dispute $dispute, string $message)
     {
         $this->dispute = $dispute;
-        $this->message = $response;
-
-        $this->raise(new DisputeResponseCreatedEvent());
+        $this->message = $message;
     }
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
-    }
-
-    public function getDispute(): Dispute
-    {
-        return $this->dispute;
     }
 
     public function getMessage(): string
