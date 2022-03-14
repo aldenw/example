@@ -5,8 +5,6 @@ namespace App\Integration\Database\Repository;
 use App\Domain\Model\DisputeResponse;
 use App\Domain\Repository\DisputeResponseRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -22,10 +20,6 @@ class DisputeResponseRepository extends ServiceEntityRepository implements Dispu
         parent::__construct($registry, DisputeResponse::class);
     }
 
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function add(DisputeResponse $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
