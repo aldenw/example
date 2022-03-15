@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection NonAsciiCharacters */
-
 namespace App\Domain\Model;
 
 use App\Domain\Event\DisputeCreatedEvent;
@@ -80,17 +78,17 @@ class Dispute extends AggregateRoot
         // sleep(120);
 
         if($this->isLocked()) {
-            throw new DisputeIsLockedException($this->getLockedUntil());
+            throw new DisputeIsLockedException($this->lockedUntil);
         }
 
-        $this->lockCase();
+        $this->lockDispute();
 
         $this->responses->add(new DisputeResponse($this, $message));
 
         $this->raise(new DisputeResponseAddedEvent());
     }
 
-    public function lockCase(DateInterval $expireTime = null): void
+    public function lockDispute(DateInterval $expireTime = null): void
     {
         $expireTime = $expireTime ?? DateInterval::createFromDateString('1 month');
 
@@ -99,15 +97,10 @@ class Dispute extends AggregateRoot
         $this->raise(new DisputeLockedEvent());
     }
 
-    public function unlockCase(): void
+    public function unlockDispute(): void
     {
         $this->lockedUntil = null;
 
         $this->raise(new DisputeUnlockedEvent());
-    }
-
-    private function getLockedUntil(): ?DateTime
-    {
-        return $this->lockedUntil;
     }
 }
