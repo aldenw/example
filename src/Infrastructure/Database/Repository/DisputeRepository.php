@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Integration\Database\Repository;
+namespace App\Infrastructure\Database\Repository;
 
 use App\Domain\Model\Dispute;
 use App\Domain\Repository\DisputeRepositoryInterface;

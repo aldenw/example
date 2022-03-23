@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Integration\Http\Controller;
+namespace App\Infrastructure\Http\Controller;
 
 use App\Domain\Command\AddDisputeResponseCommand;
 use App\Domain\Command\CreateDisputeCommand;

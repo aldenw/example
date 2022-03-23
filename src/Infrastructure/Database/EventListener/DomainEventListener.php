@@ -2,7 +2,7 @@
 
 /** @noinspection PhpUnused */
 
-namespace App\Integration\Database\EventListener;
+namespace App\Infrastructure\Database\EventListener;
 
 use App\Domain\Model\AggregateRoot;
 use Symfony\Component\Messenger\MessageBusInterface;
